@@ -1,8 +1,0 @@
----
-- name: install Jenkins
-  hosts: local
-  gather_facts: false
-  become: true
-  tasks:
-  - import_role:
-      name: "role-Jenkins"

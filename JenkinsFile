@@ -1,62 +1,68 @@
 pipeline
 {
     agent any
-    tools
+    tools 
     {
         nodejs 'Node'
     }
     environment{
-      dockerhub=credentials('dockerhub)
+      dockerhub=credentials('dockerhub')    
       }
+
 stages
   {
-  stage("Install node modules")
+
+  stage('install node modules')
   {
     steps
     {
-      sh "npm install"
+      sh 'npm install'
+    }
+
+  }
+  
+
+  stage('install node modules for client')
+  {
+      when{
+          branch 'test'
+      }
+    steps
+    {
+       
+      sh '''
+      cd client
+      npm install
+      '''
     }
   }
 
-  stage("Install node modules for client")
-  {
-      when{
-          branch "test"
-      }
-     steps
-     {
-       sh '''
-       cd client
-       npm install
-       '''
-     }
+
+stage(‘package’)
+{
+  when {
+    branch 'prod'
   }
-
-
-   stage("Package")
-   {
-     when{
-       branch "production"
-     }
-       stages{
-         stage('building docker image')
-         {
-           steps
-           {
-             sh 'docker build -t jasmine-harit-maker/FINAL:${GIT_COMMIT} . ' 
-        }
-       }
-       stage('pushing docker image')
-       {
-         steps{
-           sh '''
-           echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin
-           docker push jasmine-harit-maker/FINAL:${GIT_COMMIT}
-           docker logout
-           '''
-          }
+    stages{
+      stage('building docker image')
+      {
+        steps
+        {
+          sh 'docker build -t jasmine-harit-maker/FINAL_CAPSTONE:${GIT_COMMIT} . '
         }
       }
+      stage('pushing docker image')
+      {
+        steps{
+          sh '''
+          echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin
+          docker push jasmine-harit-maker/FINAL_CAPSTONE:${GIT_COMMIT} 
+          docker logout
+          '''
+
+        }
+      }
+    }
 }
 
 }

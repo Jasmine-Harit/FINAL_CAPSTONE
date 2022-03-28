@@ -1,0 +1,63 @@
+pipeline
+{
+    agent any
+    tools
+    {
+        nodejs 'Node'
+    }
+    environment{
+      dockerhub=credentials('dockerhub)
+      }
+stages
+  {
+  stage("Install node modules")
+  {
+    steps
+    {
+      sh "npm install"
+    }
+  }
+
+  stage("Install node modules for client")
+  {
+      when{
+          branch "test"
+      }
+     steps
+     {
+       sh '''
+       cd client
+       npm install
+       '''
+     }
+  }
+
+
+   stage("Package")
+   {
+     when{
+       branch "production"
+     }
+       stages{
+         stage('building docker image')
+         {
+           steps
+           {
+             sh 'docker build -t jasmine-harit-maker/FINAL:${GIT_COMMIT} . ' 
+        }
+       }
+       stage('pushing docker image')
+       {
+         steps{
+           sh '''
+           echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin
+           docker push jasmine-harit-maker/FINAL:${GIT_COMMIT}
+           docker logout
+           '''
+          }
+        }
+      }
+}
+
+}
+}

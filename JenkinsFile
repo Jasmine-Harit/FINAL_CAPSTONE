@@ -1,10 +1,13 @@
 pipeline {
+  agent any
   environment {
     registry = "jasmine992/final-capstone"
     registryCredential = 'jasmine992'
     dockerImage = ''
   }
-  agent any
+  tools {
+     nodejs 'node'
+  }      
   stages {
     stage('Cloning Git') {
       steps {
@@ -44,4 +47,5 @@ pipeline {
   }
  }
 } 
+}
 }

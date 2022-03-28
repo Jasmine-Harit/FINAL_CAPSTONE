@@ -19,9 +19,7 @@ pipeline {
     stage('Build') {
     steps {
        sh 'npm run dev'
-       sh 'rm -rf node_module/'
-       sh 'rm -rf client/node_modules' 
-     }
+       }
   }
 
 //     stage('Build Docker') {

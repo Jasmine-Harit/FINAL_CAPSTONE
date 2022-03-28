@@ -1,7 +1,7 @@
 pipeline {
   environment {
-    registry = "rashmigarg16/application"
-    registryCredential = 'rashmigarg16'
+    registry = "jasmine-harit-maker/FINAL_CAPSTONE"
+    registryCredential = 'jasmine-harit-maker'
     dockerImage = ''
   }
   agent any

@@ -1,69 +1,42 @@
-pipeline
-{
-    agent any
-    tools 
-    {
-        nodejs 'node'
-    }
-    environment{
-      dockerhub=credentials('dockerhub')    
-      }
-
-stages
-  {
-
-  stage('install node modules')
-  {
-    steps
-    {
-      sh 'npm install'
-    }
-
+pipeline {
+  environment {
+    registry = "rashmigarg16/application"
+    registryCredential = 'rashmigarg16'
+    dockerImage = ''
   }
+  agent any
   
-
-  stage('install node modules for client')
-  {
-      when{
-          branch 'test'
-      }
-    steps
-    {
-       
-      sh '''
-      cd client
-      npm install
-      '''
-    }
+  
+  stages {
+   
+     stage('Install Dependencies') { 
+        steps { 
+           sh 'npm install' 
+           sh 'npm run client-install'
+        }
+     }
+   
+    stage('Build') {
+    steps {
+       sh 'npm run dev'
+       sh 'rm -rf node_module/'
+       sh 'rm -rf client/node_modules' 
+     }
   }
 
-
-stage(‘package’)
-{
-  when {
-    branch 'prod'
-  }
-    stages{
-      stage('building docker image')
-      {
-        steps
-        {
-          sh 'docker build -t jasmine-harit-maker/FINAL_CAPSTONE:${GIT_COMMIT} . '
-        }
-      }
-      stage('pushing docker image')
-      {
-        steps{
-          sh '''
-          echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin
-          docker push jasmine-harit-maker/FINAL_CAPSTONE:${GIT_COMMIT} 
-          docker logout
-          '''
-
-        }
+//     stage('Build Docker') {
+//        steps {
+//          sh 'docker build -t jasmine-harit-maker/FINAL_CAPSTONE:$BUILD_NUMBER .'
+//        }
+//     }
+ 
+//     stage('Deploy Image') {
+//       steps{
+//          sh '''
+//             docker.withRegistry( '', registryCredential ) 
+//             docker push jasmine-harit-maker/FINAL_CAPSTONE:$BUILD_NUMBER 
+//             '''
+            
+//       }}
       }
     }
-}
-
-}
-}

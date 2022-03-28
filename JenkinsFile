@@ -1,0 +1,32 @@
+pipeline
+{
+    agent any
+    environment{
+        registry = "jasmine992/mern-chat-app"
+        registryCredential = 'Jenkins'
+        dockerImage = ''
+    }
+    tools
+    {
+        nodejs 'Node'
+    }
+    stages{
+        
+        stage("Install Modules"){
+            steps{
+                sh "npm install"
+            }
+        }
+
+        stage("Build"){
+            steps{
+                sh "npm compile"
+            }
+        }
+
+        stage("Test"){
+            steps{
+                sh "npm test"
+            }
+        }
+}

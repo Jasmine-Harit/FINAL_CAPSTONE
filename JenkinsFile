@@ -1,40 +1,46 @@
 pipeline {
   environment {
-    registry = "jasmine-harit-maker/FINAL_CAPSTONE"
-    registryCredential = 'jasmine-harit-maker'
+    registry = "jasmine992/final-capstone"
+    registryCredential = 'jasmine992'
     dockerImage = ''
   }
   agent any
-  
-  
   stages {
-   
-     stage('Install Dependencies') { 
-        steps { 
-           sh 'npm install' 
-           sh 'npm run client-install'
-        }
-     }
-   
-    stage('Build') {
-    steps {
-       sh 'npm run dev'
-      }
-  }
-
-//     stage('Build Docker') {
-//        steps {
-//          sh 'docker build -t jasmine-harit-maker/FINAL_CAPSTONE:$BUILD_NUMBER .'
-//        }
-//     }
- 
-//     stage('Deploy Image') {
-//       steps{
-//          sh '''
-//             docker.withRegistry( '', registryCredential ) 
-//             docker push jasmine-harit-maker/FINAL_CAPSTONE:$BUILD_NUMBER 
-//             '''
-            
-//       }}
+    stage('Cloning Git') {
+      steps {
+        git 'https://github.com/jasmine-harit-maker/FINAL_CAPSTONE.git'
       }
     }
+  stages {
+    stage('Install Dependencies') { 
+      steps { 
+        sh 'npm install' 
+        sh 'npm run client-install'
+      }
+    }
+   
+  stages {
+    stage('Build') {
+      steps {
+        sh 'npm run dev'
+      }
+   }
+
+  stage('Build Docker') {
+    steps {
+      script {
+        dockerImage = docker.build registry + ":$BUILD_NUMBER"
+      }
+    }  
+  }
+  stage('Deploy Image') {
+    steps {
+      script {
+        docker.withRegistry( '', registryCredential ) {
+        dockerImage.push
+      }
+    }
+   }
+  }
+ }
+} 

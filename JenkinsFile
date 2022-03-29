@@ -1,8 +1,8 @@
 pipeline{
     agent any
     environment { 
-        registry = "jasmine992/final-capstone" 
-        registryCredential = 'jasmineh' 
+        registry = "jasmine992/chat-application" 
+        registryCredential = 'jasmineharit' 
         dockerImage = '' 
     }    
     tools { 

@@ -5,9 +5,11 @@ pipeline
     {
         nodejs 'Node'
     }
-    environment{
-      dockerhub=credentials('dockerhub')    
-      }
+    environment { 
+        registry = "jasmine992/final-capstone" 
+        registryCredential = 'jasmineh' 
+        dockerImage = '' 
+    }    
 
 stages
   {

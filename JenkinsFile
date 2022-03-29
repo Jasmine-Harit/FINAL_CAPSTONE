@@ -18,4 +18,10 @@ pipeline{
              }
            }
        }
-    }
+           stage("Build Image")
+               steps {
+                   script {
+                       dockerImage = docker.build registry + ":$GIT_COMMIT-$BUILD_NUMBER"
+                   }
+                }
+       }

@@ -1,58 +1,41 @@
-pipeline
-{
+pipeline{
     agent any
-    tools 
-    {
-        nodejs 'Node'
-    }
     environment { 
         registry = "jasmine992/final-capstone" 
         registryCredential = 'jasmineh' 
         dockerImage = '' 
     }    
-
-stages
-  {
-
-  stage('install node modules')
-  {
-    steps
-    {
-      sh 'npm install'
+    tools { 
+        maven 'maven3'
     }
-
-  }
-  
-
-  stage('install node modules for client')
-  {
-      when{
-          branch 'test'
-      }
-    steps
-    {
-       
-      sh '''
-      cd client
-      npm install
-      '''
-    }
-  }
-
-
-stage(‘package’)
-{
-  when {
-    branch 'prod'
-  }
-     stage('Building our image') { 
+    stages
+       {
+           stage("Install node modules")
+           {
+             steps
+             {
+               sh 'npm install'
+             }
+           }
+       }
+    stages
+        {
+           stage("Node Test")
+           {
+              steps
+              {
+                sh'npm test'
+              }
+            }
+        }
+        stage('Building our image') { 
                 steps { 
                     script { 
                         dockerImage = docker.build registry + ":$GIT_COMMIT-$BUILD_NUMBER"
                     }
                 } 
             }
-            stage('Deploy our image') { 
+         stage('Deploy our image') { 
                 steps { 
                     script { 
                         docker.withRegistry( '', registryCredential ) { 
@@ -61,6 +44,4 @@ stage(‘package’)
                     } 
                 }
             }
-      }
-}
-        
+          }

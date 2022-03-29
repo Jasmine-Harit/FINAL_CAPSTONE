@@ -10,18 +10,27 @@ pipeline{
     }
     stages
        {
-           stage("Install node modules")
-           {
-             steps
-             {
-               sh 'npm install'
-             }
-           }
-       }
-           stage("Build Image")
-               steps {
-                   script {
-                       dockerImage = docker.build registry + ":$GIT_COMMIT-$BUILD_NUMBER"
-                   }
+          stage("Build")
+            {
+                steps{
+                    sh "mvn compile"
                 }
-       }
+             }
+            stage('Building our image') { 
+                steps { 
+                    script { 
+                        dockerImage = docker.build registry + ":$GIT_COMMIT-$BUILD_NUMBER"
+                    }
+                } 
+            }
+            stage('Deploy our image') { 
+                steps { 
+                    script { 
+                        docker.withRegistry( '', registryCredential ) { 
+                            dockerImage.push() 
+                        }
+                    } 
+                }
+            }
+      }
+}

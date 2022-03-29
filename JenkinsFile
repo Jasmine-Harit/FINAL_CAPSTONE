@@ -2,31 +2,19 @@ pipeline{
     agent any
     environment { 
         registry = "jasmine992/final-capstone" 
-        registryCredential = 'jasmine992' 
+        registryCredential = 'jasmineh' 
         dockerImage = '' 
     }    
-    stages {
-      stage('Git') {
-        steps {
-          git 'https://github.com/jasmine-harit-maker/FINAL_CAPSTONE.git'
-      }
+    tools 
+    {
+        nodejs 'Node'
     }
-      stage('Build') {
-        steps {
-          sh 'npm install'
-        }
-      }  
-      stage('Building Image') {
-        steps {
-          script {
-            dockerImage = docker.build registry + ":$BUILD_NUMBER"
-          }
-        }  
-      }
-      stage('Test') {
-        steps {
-          sh 'npm test'
-      }
-    }
-  }
-}
+    stages 
+       {
+          stage("Install node modules")
+            { 
+                steps{
+                    sh "npm install"
+                }
+            }
+       }

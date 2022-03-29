@@ -1,28 +1,32 @@
-pipeline{
+pipeline
+{
     agent any
-    environment { 
-        registry = "jasmine992/final-capstone" 
-        registryCredential = 'jasmineh' 
-        dockerImage = '' 
-    }    
     tools 
     {
         nodejs 'Node'
     }
-    stages 
-       {
-          stage("Install node modules")
-            { 
-                steps{
-                    sh "npm install"
-                }
-            }
-       }
-         stage('install node modules for client')
-            {
-               when{
-               branch 'test'
-       }
+    environment{
+      dockerhub=credentials('dockerhub')    
+      }
+
+stages
+  {
+
+  stage('install node modules')
+  {
+    steps
+    {
+      sh 'npm install'
+    }
+
+  }
+  
+
+  stage('install node modules for client')
+  {
+      when{
+          branch 'test'
+      }
     steps
     {
        
@@ -39,5 +43,27 @@ stage(‘package’)
   when {
     branch 'prod'
   }
+    stages{
+      stage('building docker image')
+      {
+        steps
+        {
+          sh 'docker build -t jasmine992/final-capstone:${GIT_COMMIT} . '
+        }
+      }
+      stage('pushing docker image')
+      {
+        steps{
+          sh '''
+          echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin
+          docker push jasmine992/final-capstone:${GIT_COMMIT} 
+          docker logout
+          '''
+
+        }
+      }
+    }
+}
+
 }
 }

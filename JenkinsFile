@@ -18,3 +18,25 @@ pipeline{
                 }
             }
        }
+         stage('install node modules for client')
+            {
+               when{
+               branch 'test'
+       }
+    steps
+    {
+       
+      sh '''
+      cd client
+      npm install
+      '''
+    }
+  }
+
+
+stage(‘package’)
+{
+  when {
+    branch 'prod'
+  }
+}
